@@ -1,0 +1,24 @@
+{
+  "name": "Vonage API platform connector to Amazon Transcribe and Comprehend services ",
+  "description": "This connector allows a Vonage Voice API call to be transcribed and sentiment scored",
+  "keywords": ["transcribe", "comprehend", "python", "amazon web services", "vonage"],
+  "repository": "https://github.com/nexmo-se/transcribe-comprehend-multi-sub"
+}
+
+
+{
+  "name": "Vonage API platform connector to Amazon Transcribe and Comprehend services ",
+  "description": "This connector allows a Vonage Voice API call to be transcribed and sentiment scored",
+  "keywords": ["transcribe", "comprehend", "python", "amazon web services", "vonage"],
+  "repository": "https://github.com/nexmo-se/transcribe-comprehend-multi-sub",
+  "env":{
+    "NAME": {
+      "description": "The Heroku app name, enter it exactly the same as you have above"
+    }
+  },
+  "buildpacks": [
+    {
+       "url": "heroku/python"
+    }
+  ]
+}
