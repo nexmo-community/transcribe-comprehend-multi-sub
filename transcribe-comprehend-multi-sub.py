@@ -167,16 +167,18 @@ class BufferedPipe(object):
 
 
 class TranscribeComprehendProcessor(object):
-    def __init__(self, path, rate, clip_min, aws_region, aws_id, aws_secret, requestor_id, transcribe_comprehend_url, entity, do_sentiment):
-        self._aws_region = aws_region   # Not used yet
-        self._aws_id = aws_id           # Not used yet
-        self._aws_secret = aws_secret   # Not used yet 
+    # def __init__(self, path, rate, clip_min, aws_region, aws_id, aws_secret, requestor_id, transcribe_comprehend_url, entity, do_sentiment):
+    #     self._aws_region = aws_region   # Not used yet
+    #     self._aws_id = aws_id           # Not used yet
+    #     self._aws_secret = aws_secret   # Not used yet 
+    def __init__(self, path, rate, clip_min, requestor_id, transcribe_comprehend_url, language_code, entity, do_sentiment):
         self.rate = rate
         self.bytes_per_frame = rate/25
         self._path = path
         self.clip_min_frames = clip_min // MS_PER_FRAME
         self.client_id = requestor_id
         self.webhook_url = transcribe_comprehend_url
+        self.language_code = language_code
         self.entity = entity
         self.do_sentiment = do_sentiment
 
@@ -210,7 +212,7 @@ class TranscribeComprehendProcessor(object):
             # await transcribe(program)
 
 
-            #--------  Multi-thread processing -- 
+            #--------  Transcription multi-thread processing -- 
 
             async def transcribe(cmd, result):
                 proc = await asyncio.create_subprocess_shell(cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
@@ -226,13 +228,13 @@ class TranscribeComprehendProcessor(object):
                     error = (f'{stderr.decode()}').split('\n')[-2] 
                     result.put('>>> Failed transcription - Reason: ' + error)
 
-            program = 'python ./straight-transcription.py ' + fn
+            program = 'python ./straight-transcription.py ' + fn + ' ' + self.language_code + ' ' + REGION
 
             queue = Queue()
 
             x = Thread(target=asyncio.run, args=(transcribe(cmd=program,result=queue), ))
             
-            logging.info('>>> Start thread <<<')
+            logging.info('>>> Start transcription thread <<<')
             x.start()
 
             checkqueue = True
@@ -295,8 +297,48 @@ class TranscribeComprehendProcessor(object):
          
             if self.transcript != '' :
                 if (self.do_sentiment) :
-                    self.sentiment = comprehend.detect_sentiment(Text=self.transcript, LanguageCode='en')
                     
+                    # self.sentiment = comprehend.detect_sentiment(Text=self.transcript, LanguageCode='en')
+                    #--------  Sentiment analysis multi-thread processing -- 
+
+                    async def sentiment(cmd, result):
+                        proc = await asyncio.create_subprocess_shell(cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
+
+                        stdout, stderr = await proc.communicate()
+
+                        print(f'[{cmd!r} exited with {proc.returncode}]')
+                        
+                        if stdout:
+                            result.put(f'{stdout.decode()}'.strip('\n'))
+                        
+                        if stderr:
+                            error = (f'{stderr.decode()}').split('\n')[-2] 
+                            result.put('>>> Failed sentiment analysis - Reason: ' + error)
+
+                    p2 = 'python ./straight-sentiment.py ' + "'" + self.transcript + "' " + self.language_code[:2] + ' ' + REGION
+
+                    queue2 = Queue()
+
+                    x2 = Thread(target=asyncio.run, args=(sentiment(cmd=p2,result=queue2), ))
+                    
+                    logging.info('>>> Start sentiment thread <<<')
+                    x2.start()
+
+                    checkqueue2 = True
+                    
+                    while (checkqueue2):
+                      try:
+                          self.sentiment = queue2.get(False)
+                          checkqueue2 = False
+                          break
+                      except:
+                          self.sentiment = None
+                          await asyncio.sleep(1)  
+
+                    print('>>>> sentiment:', self.sentiment)
+                    
+                    queue2.task_done()                     
+
                     self.payload_raw = {
                         "transcript": self.transcript,
                         "entity": self.entity,
@@ -409,14 +451,20 @@ class WSHandler(tornado.websocket.WebSocketHandler):
             # info(">>> webhook_url")
             # info(self.webhook_url)
 
+            self.language_code = data.get('language_code', 'en-US')
+
             self.entity = data.get('entity', "")
 
             self.do_sentiment = data.get('do_sentiment', True)
     
             self.vad.set_mode(sensitivity)
             self.silence = silence_time // MS_PER_FRAME
+            
+            # self.processor = TranscribeComprehendProcessor(
+            #     self.path, self.rate, clip_min, region, data['aws_key'], data['aws_secret'], self.client_id, self.webhook_url, self.entity, self.do_sentiment).process
             self.processor = TranscribeComprehendProcessor(
-                self.path, self.rate, clip_min, region, data['aws_key'], data['aws_secret'], self.client_id, self.webhook_url, self.entity, self.do_sentiment).process
+                self.path, self.rate, clip_min, self.client_id, self.webhook_url, self.language_code , self.entity, self.do_sentiment).process
+  
             self.frame_buffer = BufferedPipe(
                 clip_max // MS_PER_FRAME, self.processor)
             self.write_message('ok')

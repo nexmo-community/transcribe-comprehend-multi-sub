@@ -1,5 +1,4 @@
 import sys
-
 import asyncio
 import aiofile
 
@@ -60,10 +59,12 @@ async def basic_transcribe(file, media_sample_rate_hz=8000, language_code="en-US
 # loop.close()
 
 # fn = './test.wav'
-fn = sys.argv[1]
+fn = sys.argv[1]    # audio file name
+lc = sys.argv[2]    # language code, e.g. en-US
+r = sys.argv[3]     # region, e.g. us-east-1
 
 loop = asyncio.get_event_loop()
-transcript = loop.run_until_complete(asyncio.gather(basic_transcribe(file=fn)))[-1]
+transcript = loop.run_until_complete(asyncio.gather(basic_transcribe(file=fn, language_code=lc, region=r)))[-1]
 loop.close()
 
 print(transcript)
