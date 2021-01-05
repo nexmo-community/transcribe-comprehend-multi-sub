@@ -299,45 +299,60 @@ class TranscribeComprehendProcessor(object):
                 if (self.do_sentiment) :
                     
                     # self.sentiment = comprehend.detect_sentiment(Text=self.transcript, LanguageCode='en')
-                    #--------  Sentiment analysis multi-thread processing -- 
-
-                    async def sentiment(cmd, result):
-                        proc = await asyncio.create_subprocess_shell(cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
-
-                        stdout, stderr = await proc.communicate()
-
-                        print(f'[{cmd!r} exited with {proc.returncode}]')
-                        
-                        if stdout:
-                            result.put(f'{stdout.decode()}'.strip('\n'))
-                        
-                        if stderr:
-                            error = (f'{stderr.decode()}').split('\n')[-2] 
-                            result.put('>>> Failed sentiment analysis - Reason: ' + error)
-
-                    p2 = 'python ./straight-sentiment.py ' + "'" + self.transcript + "' " + self.language_code[:2] + ' ' + REGION
-
-                    queue2 = Queue()
-
-                    x2 = Thread(target=asyncio.run, args=(sentiment(cmd=p2,result=queue2), ))
                     
-                    logging.info('>>> Start sentiment thread <<<')
-                    x2.start()
+                    #--------  Sentiment analysis multi-thread processing -- AWS side may block
+                    # async def sentiment(cmd, result):
+                    #     proc = await asyncio.create_subprocess_shell(cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
 
-                    checkqueue2 = True
+                    #     stdout, stderr = await proc.communicate()
+
+                    #     print(f'[{cmd!r} exited with {proc.returncode}]')
+                        
+                    #     if stdout:
+                    #         result.put(f'{stdout.decode()}'.strip('\n'))
+                        
+                    #     if stderr:
+                    #         error = (f'{stderr.decode()}').split('\n')[-2] 
+                    #         result.put('>>> Failed sentiment analysis - Reason: ' + error)
+
+                    # p2 = 'python ./straight-sentiment.py ' + "'" + self.transcript + "' " + self.language_code[:2] + ' ' + REGION
+
+                    # queue2 = Queue()
+
+                    # x2 = Thread(target=asyncio.run, args=(sentiment(cmd=p2,result=queue2), ))
                     
-                    while (checkqueue2):
-                      try:
-                          self.sentiment = queue2.get(False)
-                          checkqueue2 = False
-                          break
-                      except:
-                          self.sentiment = None
-                          await asyncio.sleep(1)  
+                    # logging.info('>>> Start sentiment thread <<<')
+                    # x2.start()
+
+                    # checkqueue2 = True
+                    
+                    # while (checkqueue2):
+                    #   try:
+                    #       self.sentiment = queue2.get(False)
+                    #       checkqueue2 = False
+                    #       break
+                    #   except:
+                    #       self.sentiment = None
+                    #       await asyncio.sleep(1)  
+
+                    # print('>>>> sentiment:', self.sentiment)
+                    
+                    # queue2.task_done()
+
+                    #--------  Sentiment analysis mono-thread processing --  
+
+                    async def sentiment_coro(text, language, region):
+                        return subprocess.check_output(['python', './straight-sentiment.py', text, language, region])
+
+                    print(">>> here 2")    
+
+                    sentiment_task = asyncio.create_task(sentiment_coro(self.transcript, self.language_code[:2], REGION))
+
+                    self.sentiment = (await sentiment_task).decode('utf-8')
 
                     print('>>>> sentiment:', self.sentiment)
-                    
-                    queue2.task_done()                     
+
+                    #--------                 
 
                     self.payload_raw = {
                         "transcript": self.transcript,
