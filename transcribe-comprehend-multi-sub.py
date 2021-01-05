@@ -342,9 +342,7 @@ class TranscribeComprehendProcessor(object):
                     #--------  Sentiment analysis mono-thread processing --  
 
                     async def sentiment_coro(text, language, region):
-                        return subprocess.check_output(['python', './straight-sentiment.py', text, language, region])
-
-                    print(">>> here 2")    
+                        return subprocess.check_output(['python', './straight-sentiment.py', text, language, region]) 
 
                     sentiment_task = asyncio.create_task(sentiment_coro(self.transcript, self.language_code[:2], REGION))
 
