@@ -65,7 +65,7 @@ conns = {}
 
 # Environment variables (local deployment: .env file)
 PORT = os.getenv("PORT") # Do not set for Heroku deployment
-REGION = os.getenv("REGION", default = "us-east-1")
+REGION = os.getenv("AWS_DEFAULT_REGION", default = "us-east-1")
 
 # to do: derivate from transcribe language
 LANGUAGE_FOR_SENTIMENT = os.getenv("LANGUAGE_FOR_SENTIMENT", default = "en")
