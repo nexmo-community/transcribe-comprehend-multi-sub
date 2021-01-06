@@ -355,7 +355,7 @@ class TranscribeComprehendProcessor(object):
                     self.payload_raw = {
                         "transcript": self.transcript,
                         "entity": self.entity,
-                        "sentiment": self.sentiment,
+                        "sentiment": json.loads(self.sentiment),
                         "client_id": self.client_id,
                         "service": "AWS Transcribe and Comprehend"
                     }
