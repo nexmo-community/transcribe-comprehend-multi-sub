@@ -49,38 +49,24 @@ load_dotenv()
 
 #-------------------------
 
-# format = '%(asctime)s: %(message)s'
-# logging.basicConfig(format=format, level=logging.DEBUG, datefmt='%H:%M:%S')
-
-# # Only used for record function
-
-# logging.captureWarnings(False)
-# requests.packages.urllib3.disable_warnings(InsecurePlatformWarning)
-# requests.packages.urllib3.disable_warnings(SNIMissingWarning)
-
 MS_PER_FRAME = 20  # Duration of a frame in ms
 
 # Global variables
 conns = {}
 
-# Environment variables (local deployment: .env file)
+# Environment variables (if local deployment: .env file)
 PORT = os.getenv("PORT") # Do not set for Heroku deployment
 REGION = os.getenv("AWS_DEFAULT_REGION", default = "us-east-1")
 
-# to do: derivate from transcribe language
-LANGUAGE_FOR_SENTIMENT = os.getenv("LANGUAGE_FOR_SENTIMENT", default = "en")
-
+# By default, delete all audio chunk files after processing
 DELETE_RECORDING = os.getenv("DELETE_RECORDING", default = True)
 
 #--------------------------
 
+# Just for displaying connected and disconnected websockets
+# Not for operational purpose
 connected = 0
 disconnected = 0
-
-#--------------------------
-
-def nothing():
-    print('nothing ...')
 
 #-------------------------------- Transcribe main -----------------------------
 
@@ -91,9 +77,6 @@ class MyEventHandler(TranscriptResultStreamHandler):
         self.result_holder = []
 
     async def handle_transcript_event(self, transcript_event: TranscriptEvent):
-        # This handler can be implemented to handle transcriptions as needed.
-        # Here's an example to get started.
-
         results = transcript_event.transcript.results
         for result in results:
             for alt in result.alternatives:
@@ -167,10 +150,6 @@ class BufferedPipe(object):
 
 
 class TranscribeComprehendProcessor(object):
-    # def __init__(self, path, rate, clip_min, aws_region, aws_id, aws_secret, requestor_id, transcribe_comprehend_url, entity, do_sentiment):
-    #     self._aws_region = aws_region   # Not used yet
-    #     self._aws_id = aws_id           # Not used yet
-    #     self._aws_secret = aws_secret   # Not used yet 
     def __init__(self, path, rate, clip_min, requestor_id, transcribe_comprehend_url, language_code, entity, do_sentiment):
         self.rate = rate
         self.bytes_per_frame = rate/25
@@ -193,24 +172,6 @@ class TranscribeComprehendProcessor(object):
             output.writeframes(payload)
             output.close()
             debug('File written {}'.format(fn))
-
-            #--------  asyncio implementation 1 -- 
-
-            # async def transcribe(cmd):
-            #     proc = await asyncio.create_subprocess_shell(cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
-
-            #     stdout, stderr = await proc.communicate()
-
-            #     print(f'[{cmd!r} exited with {proc.returncode}]')
-            #     if stdout:
-            #         print(f'[stdout]\n{stdout.decode()}')
-            #     if stderr:
-            #         print(f'[stderr]\n{stderr.decode()}')
-
-            # program = 'python ./straight-transcription.py ' + fn
-
-            # await transcribe(program)
-
 
             #--------  Transcription multi-thread processing -- 
 
@@ -254,92 +215,10 @@ class TranscribeComprehendProcessor(object):
             
             queue.task_done() 
 
-            #------ Asyncio tasks -- not fast enough !!!
-
-            # async def transcribe_coro(file):
-            #     return subprocess.check_output(['python', './straight-transcription.py', file])
-
-            # print(">>> here 1")    
-
-            # # transcribe_task = asyncio.create_task(subprocess.check_output(['python', './straight-transcription.py', fn]))
-            # transcribe_task = asyncio.create_task(transcribe_coro(fn))
-
-            # self.transcript = (await transcribe_task).decode('utf-8')
-
-            # # print('>>>> transcript:', self.transcript)
-
-            # if (DELETE_RECORDING):
-            #     os.remove(fn)      
-
-            #------ This works but it is NOT multi-threaded ! --------
-            
-            # logging.info('>>>> Create thread <<<<<')
-
-            # def transcribe(file):
-            #     return subprocess.check_output(['python', './straight-transcription.py', file])
-
-            # with concurrent.futures.ThreadPoolExecutor() as executor:
-            #     future = executor.submit(transcribe, fn)
-            #     self.transcript = future.result().decode('utf-8')
-
-            # if (DELETE_RECORDING):
-            #     os.remove(fn)  
-
-            # ------------ No thread - No async - Plain processing --------------
-
-            # self.transcript = subprocess.check_output(['python', './straight-transcription.py', fn]).decode('utf-8')
-            # print('>>>> transcript:', self.transcript)
-
-            # if (DELETE_RECORDING):
-            #     os.remove(fn)  
-
             #------------------
          
             if self.transcript != '' :
-                if (self.do_sentiment) :
-                    
-                    # self.sentiment = comprehend.detect_sentiment(Text=self.transcript, LanguageCode='en')
-                    
-                    #--------  Sentiment analysis multi-thread processing -- AWS side may block
-                    # async def sentiment(cmd, result):
-                    #     proc = await asyncio.create_subprocess_shell(cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
-
-                    #     stdout, stderr = await proc.communicate()
-
-                    #     print(f'[{cmd!r} exited with {proc.returncode}]')
-                        
-                    #     if stdout:
-                    #         result.put(f'{stdout.decode()}'.strip('\n'))
-                        
-                    #     if stderr:
-                    #         error = (f'{stderr.decode()}').split('\n')[-2] 
-                    #         result.put('>>> Failed sentiment analysis - Reason: ' + error)
-
-                    # p2 = 'python ./straight-sentiment.py ' + "'" + self.transcript + "' " + self.language_code[:2] + ' ' + REGION
-
-                    # queue2 = Queue()
-
-                    # x2 = Thread(target=asyncio.run, args=(sentiment(cmd=p2,result=queue2), ))
-                    
-                    # logging.info('>>> Start sentiment thread <<<')
-                    # x2.start()
-
-                    # checkqueue2 = True
-                    
-                    # while (checkqueue2):
-                    #   try:
-                    #       self.sentiment = queue2.get(False)
-                    #       checkqueue2 = False
-                    #       break
-                    #   except:
-                    #       self.sentiment = None
-                    #       await asyncio.sleep(1)  
-
-                    # print('>>>> sentiment:', self.sentiment)
-                    
-                    # queue2.task_done()
-
-                    #--------  Sentiment analysis mono-thread processing --  
+                if (self.do_sentiment): 
 
                     async def sentiment_coro(text, language, region):
                         return subprocess.check_output(['python', './straight-sentiment.py', text, language, region]) 
@@ -348,9 +227,7 @@ class TranscribeComprehendProcessor(object):
 
                     self.sentiment = (await sentiment_task).decode('utf-8')
 
-                    print('>>>> sentiment:', self.sentiment)
-
-                    #--------                 
+                    print('>>>> sentiment:', self.sentiment)            
 
                     self.payload_raw = {
                         "transcript": self.transcript,
@@ -408,7 +285,6 @@ class WSHandler(tornado.websocket.WebSocketHandler):
         self.tick = None
         self.id = uuid.uuid4().hex
         self.vad = webrtcvad.Vad()
-        # Level of sensitivity
         self.processor = None
         self.path = None
         self.rate = None  # default to None
@@ -473,8 +349,6 @@ class WSHandler(tornado.websocket.WebSocketHandler):
             self.vad.set_mode(sensitivity)
             self.silence = silence_time // MS_PER_FRAME
             
-            # self.processor = TranscribeComprehendProcessor(
-            #     self.path, self.rate, clip_min, region, data['aws_key'], data['aws_secret'], self.client_id, self.webhook_url, self.entity, self.do_sentiment).process
             self.processor = TranscribeComprehendProcessor(
                 self.path, self.rate, clip_min, self.client_id, self.webhook_url, self.language_code , self.entity, self.do_sentiment).process
   
