@@ -5,11 +5,11 @@
 	"repository": "https://github.com/nexmo-se/transcribe-comprehend-multi-sub",
 	"env":{
 		"AWS_ACCESS_KEY_ID": {
-		    "description": "Retrieve from your security credentials on AWS console",
+		    "description": "Retrieved from your security credentials on AWS console",
 		    "required": true
 		},
 		"AWS_SECRET_ACCESS_KEY": {
-		    "description": "Retrieve from your security credentials on AWS console",
+		    "description": "From when you created the access key",
 		    "required": true
 		},
 		"AWS_DEFAULT_REGION": {
