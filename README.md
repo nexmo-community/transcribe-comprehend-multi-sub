@@ -6,15 +6,18 @@ Use this Transcribe & Comprehend connector for real time transcription and senti
 
 ## Amazon Transcribe & Comprehend connector
 
-In order to get started, you need to have an [AWS account](http://aws.amazon.com), retrieve your AWS key and secret, and take note of your AWS services default region.
+In order to get started, you will need to have an [AWS account](http://aws.amazon.com).
 
-To find your Access Key and Secret Access Key:
+You will also need to know an active AWS Access Key ID and Secret Key pair.
 
-- Log in to your [AWS Management Console](http://aws.amazon.com/console).
+If necessary, create a new pair of keys:
+- Log in to your [AWS Management Console](http://aws.amazon.com).
 - Click on your user name at the top right of the page.
-- Click on the Security Credentials link from the drop-down menu.
-- Find the Access Credentials section, and copy the latest Access Key ID.
-- Click on the Show link in the same row, and copy the Secret Access Key.
+- Click on the My Security Credentials link from the drop-down menu.
+- Go to Access keys section,
+- Click on \[Create New Access Key\] (\*)
+
+(\*) *Note: Your AWS account may be limited to only 2 active Access Keys. To create a new pair of Keys, you may need to "Make Inactive" an existing active Access Key ID, however before doing so, you need to absolutely make sure that key is not used by your other applications.*
 
 ## About this connector
 
@@ -39,14 +42,15 @@ cp .env.example .env
 
 Edit `.env` file,<br/>
 set the 3 first parameters with their respective values retrieved from your AWS account,<br/>
-set the `PORT` value where websockets connections will be established.
+set the `PORT` value (e.g. *5000*) where websockets connections will be established.
+The `PORT` value needs to be the same as specified in `Dockerfile` and `docker-compose.yml` files.
 
 Launch the Transcribe & Comprehend connector as a Docker instance:
 
 ```bash
 docker-compose up
 ```
-Your Docker container's public hostname and port will be used by your Vonage Voice API application as part of the websocket uri `wss://<docker_host_name>:<proxy_port>`, e.g. `wss://myserver.mydomain.com:40000`
+Your Docker container's public hostname and port will be used by your Vonage Voice API application as part of the websocket uri `wss://<docker_host_name>:<proxy_port>`, e.g. *myserver.mycompany.com:40000*, or *xxxxx.ngrok.io*.
 
 ### Local deployment
 
@@ -69,12 +73,22 @@ pip install --upgrade -r requirements.txt
 
 Launch the connector service:
 ```bash
-python server.py
+python transcribe-comprehend-multi-sub.py
 ```
 
 Your server's public hostname and port will be used by your Vonage Voice API application as part of the websocket uri `wss://<serverhostname>:<port>`, e.g. `wss://abcdef123456.ngrok.io`
 
+
+Specifically with the sample application https://github.com/nexmo-se/transcribe-comprehend-client, you will set TRANSCRIBE_COMPREHEND_CONNECTOR_SERVER argument as for example `abcdef123456.ngrok.io`.
+
+
 ### Command Line Heroku deployment
+
+Install [git](https://git-scm.com/downloads).
+
+Install [Heroku command line](https://devcenter.heroku.com/categories/command-line) and login to your Heroku account.
+
+Download this sample application code to a local folder, then go to that folder.
 
 If you do not yet have a local git repository, create one:</br>
 ```bash
@@ -90,22 +104,26 @@ heroku create myappname
 ```
 
 On your Heroku dashboard where your connector application page is shown, click on `Settings` button,
-add the following `Config Vars` and set them with their respective values retrieved from your AWS account:</br>
+add the following `Config Vars` and set them with their respective values:</br>
 AWS_ACCESS_KEY_ID</br>
-AWS_SECRET_ACCESS_KEY</br>
 AWS_DEFAULT_REGION</br>
+AWS_SECRET_ACCESS_KEY</br>
 
 ```bash
 git push heroku master
 ```
 
-On your Heroku dashboard where your connector application page is shown, click on `Open App` button, that URL will be the one to be used by your Vonage Voice API application as part of the websocket uri, e.g. `wss://myappname.herokuapp.com` 
+On your Heroku dashboard where your connector application page is shown, click on `Open App` button, that URL will be the one to be used by your Vonage Voice API application as part of the websocket uri, e.g. `wss://myappname.herokuapp.com`
+
+Specifically with the sample application https://github.com/nexmo-se/transcribe-comprehend-client, you will set TRANSCRIBE_COMPREHEND_CONNECTOR_SERVER argument as `myappname.herokuapp.com`
 
 ### 1-click Heroku deployment
 
 Click the 'Deploy to Heroku' button at the top of this page, and follow the instructions to enter your Heroku application name and the 3 AWS parameter respective values retrieved from your AWS account.
 
 Once deployed, on the Heroku dashboard where your connector application page is shown, click on `Open App` button, that URL will be the one to be used by your Vonage Voice API application as part of the websocket uri, e.g. `wss://myappname.herokuapp.com`.
+
+Specifically with the sample application https://github.com/nexmo-se/transcribe-comprehend-client, you will set TRANSCRIBE_COMPREHEND_CONNECTOR_SERVER argument as `myappname.herokuapp.com`
 
 ## Usage capacity
 
