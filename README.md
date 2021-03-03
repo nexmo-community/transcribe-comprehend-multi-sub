@@ -79,7 +79,7 @@ python transcribe-comprehend-multi-sub.py
 Your server's public hostname and port will be used by your Vonage Voice API application as part of the websocket uri `wss://<serverhostname>:<port>`, e.g. `wss://abcdef123456.ngrok.io`
 
 
-Specifically with the sample application https://github.com/nexmo-se/transcribe-comprehend-client, you will set TRANSCRIBE_COMPREHEND_reference connection_SERVER argument as for example `abcdef123456.ngrok.io`.
+Specifically with the sample application https://github.com/nexmo-se/transcribe-comprehend-client, you will set TRANSCRIBE_COMPREHEND_REFERENCE_CONNECTION argument as for example `abcdef123456.ngrok.io`.
 
 
 ### Command Line Heroku deployment
@@ -115,7 +115,7 @@ git push heroku master
 
 On your Heroku dashboard where your reference connection application page is shown, click on `Open App` button, that URL will be the one to be used by your Vonage Voice API application as part of the websocket uri, e.g. `wss://myappname.herokuapp.com`
 
-Specifically with the sample application https://github.com/nexmo-se/transcribe-comprehend-client, you will set TRANSCRIBE_COMPREHEND_reference connection_SERVER argument as `myappname.herokuapp.com`
+Specifically with the sample application https://github.com/nexmo-se/transcribe-comprehend-client, you will set TRANSCRIBE_COMPREHEND_REFERENCE_CONNECTION argument as `myappname.herokuapp.com`
 
 ### 1-click Heroku deployment
 
@@ -123,13 +123,13 @@ Click the 'Deploy to Heroku' button at the top of this page, and follow the inst
 
 Once deployed, on the Heroku dashboard where your reference connection application page is shown, click on `Open App` button, that URL will be the one to be used by your Vonage Voice API application as part of the websocket uri, e.g. `wss://myappname.herokuapp.com`.
 
-Specifically with the sample application https://github.com/nexmo-se/transcribe-comprehend-client, you will set TRANSCRIBE_COMPREHEND_reference connection_SERVER argument as `myappname.herokuapp.com`
+Specifically with the sample application https://github.com/nexmo-se/transcribe-comprehend-client, you will set TRANSCRIBE_COMPREHEND_REFERENCE_CONNECTION argument as `myappname.herokuapp.com`
 
 ## Usage capacity
 
 This reference connection is a multi-threaded application that submits concurrent transcription requests to Amazon Transcribe in parallel.
 
-With this reference code, one connected websocket corresponds to one concurrent transcription request. You may decide to update the code on your own to use queues and worker threads to serialize transcription requests from multiple connected websockets.
+With this reference connection code, one connected websocket corresponds to one concurrent transcription request. You may decide to update the code on your own to use queues and worker threads to serialize transcription requests from multiple connected websockets.
 
 Make sure your voice application and reference connection application do not submit more than the maximum allowed (default = 5) concurrent transcription requests on your Amazon Transcribe account.
 
