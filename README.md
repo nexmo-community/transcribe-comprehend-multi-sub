@@ -1,10 +1,10 @@
-# Amazon Transcribe & Comprehend connector
+# Amazon Transcribe & Comprehend reference connection
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/nexmo-se/transcribe-comprehend-multi-sub)
 
-Use this Transcribe & Comprehend connector for real time transcription and sentiment analysis of voice calls.
+Use this Transcribe & Comprehend reference connection for real time transcription and sentiment analysis of voice calls.
 
-## Amazon Transcribe & Comprehend connector
+## Amazon Transcribe & Comprehend reference connection
 
 In order to get started, you will need to have an [AWS account](http://aws.amazon.com).
 
@@ -19,17 +19,17 @@ If necessary, create a new pair of keys:
 
 (\*) *Note: Your AWS account may be limited to only 2 active Access Keys. To create a new pair of Keys, you may need to "Make Inactive" an existing active Access Key ID, however before doing so, you need to absolutely make sure that key is not used by your other applications.*
 
-## About this connector
+## About this reference connection
 
-Vonage Voice API's Amazon Transcribe & Comprehend connector makes use of the [WebSockets feature](https://docs.nexmo.com/voice/voice-api/websockets). When a call is established, your Vonage Voice API application makes a websocket connection to this connector and streams the audio in real time via the websocket.
+Vonage Voice API's Amazon Transcribe & Comprehend reference connection makes use of the [WebSockets feature](https://docs.nexmo.com/voice/voice-api/websockets). When a call is established, your Vonage Voice API application makes a websocket connection to this reference connection and streams the audio in real time via the websocket.
 
-The connector posts back in real time transcripts and optionally sentiment scores, via a webhook call back to your Vonage Voice API application. It is a multi-threaded server application with subprocesses to avoid unnecessary long idle https sessions to AWS after transcription and sentiment analysis requests.
+The reference connection posts back in real time transcripts and optionally sentiment scores, via a webhook call back to your Vonage Voice API application. It is a multi-threaded server application with subprocesses to avoid unnecessary long idle https sessions to AWS after transcription and sentiment analysis requests.
 
-See https://github.com/nexmo-se/transcribe-comprehend-client for a sample code on how an application using Vonage Voice API can use the connector for real time transcription and sentiment analysis of voice calls.
+See https://github.com/nexmo-se/transcribe-comprehend-client for a sample code on how an application using Vonage Voice API can use the reference connection for real time transcription and sentiment analysis of voice calls.
 
 The parameter `sensitivity` allows the Voice API application to set the VAD (Voice Activity Detection) sensitivity from the most sensitive (value = 0) to the least sensitive (value = 3), this is an integer value.
 
-## Running Transcibe and Comprehend connector
+## Running Transcibe and Comprehend reference connection
 
 You may select one of the following 4 types of deployments.
 
@@ -45,7 +45,7 @@ set the 3 first parameters with their respective values retrieved from your AWS 
 set the `PORT` value (e.g. *5000*) where websockets connections will be established.
 The `PORT` value needs to be the same as specified in `Dockerfile` and `docker-compose.yml` files.
 
-Launch the Transcribe & Comprehend connector as a Docker instance:
+Launch the Transcribe & Comprehend reference connection as a Docker instance:
 
 ```bash
 docker-compose up
@@ -71,7 +71,7 @@ Install dependencies once:
 pip install --upgrade -r requirements.txt
 ```
 
-Launch the connector service:
+Launch the reference connection service:
 ```bash
 python transcribe-comprehend-multi-sub.py
 ```
@@ -79,7 +79,7 @@ python transcribe-comprehend-multi-sub.py
 Your server's public hostname and port will be used by your Vonage Voice API application as part of the websocket uri `wss://<serverhostname>:<port>`, e.g. `wss://abcdef123456.ngrok.io`
 
 
-Specifically with the sample application https://github.com/nexmo-se/transcribe-comprehend-client, you will set TRANSCRIBE_COMPREHEND_CONNECTOR_SERVER argument as for example `abcdef123456.ngrok.io`.
+Specifically with the sample application https://github.com/nexmo-se/transcribe-comprehend-client, you will set TRANSCRIBE_COMPREHEND_reference connection_SERVER argument as for example `abcdef123456.ngrok.io`.
 
 
 ### Command Line Heroku deployment
@@ -97,13 +97,13 @@ git add .
 git commit -am "initial"
 ```
 
-Deploy this connector application to Heroku from the command line using the Heroku CLI:
+Deploy this reference connection application to Heroku from the command line using the Heroku CLI:
 
 ```bash
 heroku create myappname
 ```
 
-On your Heroku dashboard where your connector application page is shown, click on `Settings` button,
+On your Heroku dashboard where your reference connection application page is shown, click on `Settings` button,
 add the following `Config Vars` and set them with their respective values:</br>
 AWS_ACCESS_KEY_ID</br>
 AWS_DEFAULT_REGION</br>
@@ -113,24 +113,24 @@ AWS_SECRET_ACCESS_KEY</br>
 git push heroku master
 ```
 
-On your Heroku dashboard where your connector application page is shown, click on `Open App` button, that URL will be the one to be used by your Vonage Voice API application as part of the websocket uri, e.g. `wss://myappname.herokuapp.com`
+On your Heroku dashboard where your reference connection application page is shown, click on `Open App` button, that URL will be the one to be used by your Vonage Voice API application as part of the websocket uri, e.g. `wss://myappname.herokuapp.com`
 
-Specifically with the sample application https://github.com/nexmo-se/transcribe-comprehend-client, you will set TRANSCRIBE_COMPREHEND_CONNECTOR_SERVER argument as `myappname.herokuapp.com`
+Specifically with the sample application https://github.com/nexmo-se/transcribe-comprehend-client, you will set TRANSCRIBE_COMPREHEND_reference connection_SERVER argument as `myappname.herokuapp.com`
 
 ### 1-click Heroku deployment
 
 Click the 'Deploy to Heroku' button at the top of this page, and follow the instructions to enter your Heroku application name and the 3 AWS parameter respective values retrieved from your AWS account.
 
-Once deployed, on the Heroku dashboard where your connector application page is shown, click on `Open App` button, that URL will be the one to be used by your Vonage Voice API application as part of the websocket uri, e.g. `wss://myappname.herokuapp.com`.
+Once deployed, on the Heroku dashboard where your reference connection application page is shown, click on `Open App` button, that URL will be the one to be used by your Vonage Voice API application as part of the websocket uri, e.g. `wss://myappname.herokuapp.com`.
 
-Specifically with the sample application https://github.com/nexmo-se/transcribe-comprehend-client, you will set TRANSCRIBE_COMPREHEND_CONNECTOR_SERVER argument as `myappname.herokuapp.com`
+Specifically with the sample application https://github.com/nexmo-se/transcribe-comprehend-client, you will set TRANSCRIBE_COMPREHEND_reference connection_SERVER argument as `myappname.herokuapp.com`
 
 ## Usage capacity
 
-This connector is a multi-threaded application that submits concurrent transcription requests to Amazon Transcribe in parallel.
+This reference connection is a multi-threaded application that submits concurrent transcription requests to Amazon Transcribe in parallel.
 
 With this reference code, one connected websocket corresponds to one concurrent transcription request. You may decide to update the code on your own to use queues and worker threads to serialize transcription requests from multiple connected websockets.
 
-Make sure your voice application and connector application do not submit more than the maximum allowed (default = 5) concurrent transcription requests on your Amazon Transcribe account.
+Make sure your voice application and reference connection application do not submit more than the maximum allowed (default = 5) concurrent transcription requests on your Amazon Transcribe account.
 
 You may see more information on that subject [here](https://docs.aws.amazon.com/transcribe/latest/dg/limits-guidelines.html).
