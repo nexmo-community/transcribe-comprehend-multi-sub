@@ -1,6 +1,6 @@
 # Amazon Transcribe & Comprehend reference connection
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/nexmo-se/transcribe-comprehend-multi-sub)
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/nexmo-community/transcribe-comprehend-multi-sub)
 
 Use this Transcribe & Comprehend reference connection for real time transcription and sentiment analysis of voice calls.
 
@@ -25,7 +25,7 @@ Vonage Voice API's Amazon Transcribe & Comprehend reference connection makes use
 
 The reference connection posts back in real time transcripts and optionally sentiment scores, via a webhook call back to your Vonage Voice API application. It is a multi-threaded server application with subprocesses to avoid unnecessary long idle https sessions to AWS after transcription and sentiment analysis requests.
 
-See https://github.com/nexmo-se/transcribe-comprehend-client for a sample code on how an application using Vonage Voice API can use the reference connection for real time transcription and sentiment analysis of voice calls.
+See https://github.com/nexmo-community/transcribe-comprehend-client for a sample code on how an application using Vonage Voice API can use the reference connection for real time transcription and sentiment analysis of voice calls.
 
 The parameter `sensitivity` allows the Voice API application to set the VAD (Voice Activity Detection) sensitivity from the most sensitive (value = 0) to the least sensitive (value = 3), this is an integer value.
 
@@ -79,7 +79,7 @@ python transcribe-comprehend-multi-sub.py
 Your server's public hostname and port will be used by your Vonage Voice API application as part of the websocket uri `wss://<serverhostname>:<port>`, e.g. `wss://abcdef123456.ngrok.io`
 
 
-Specifically with the sample application https://github.com/nexmo-se/transcribe-comprehend-client, you will set TRANSCRIBE_COMPREHEND_REFERENCE_CONNECTION argument as for example `abcdef123456.ngrok.io`.
+Specifically with the sample application https://github.com/nexmo-community/transcribe-comprehend-client, you will set TRANSCRIBE_COMPREHEND_REFERENCE_CONNECTION argument as for example `abcdef123456.ngrok.io`.
 
 
 ### Command Line Heroku deployment
@@ -115,7 +115,7 @@ git push heroku master
 
 On your Heroku dashboard where your reference connection application page is shown, click on `Open App` button, that URL will be the one to be used by your Vonage Voice API application as part of the websocket uri, e.g. `wss://myappname.herokuapp.com`
 
-Specifically with the sample application https://github.com/nexmo-se/transcribe-comprehend-client, you will set TRANSCRIBE_COMPREHEND_REFERENCE_CONNECTION argument as `myappname.herokuapp.com`
+Specifically with the sample application https://github.com/nexmo-community/transcribe-comprehend-client, you will set TRANSCRIBE_COMPREHEND_REFERENCE_CONNECTION argument as `myappname.herokuapp.com`
 
 ### 1-click Heroku deployment
 
@@ -123,7 +123,7 @@ Click the 'Deploy to Heroku' button at the top of this page, and follow the inst
 
 Once deployed, on the Heroku dashboard where your reference connection application page is shown, click on `Open App` button, that URL will be the one to be used by your Vonage Voice API application as part of the websocket uri, e.g. `wss://myappname.herokuapp.com`.
 
-Specifically with the sample application https://github.com/nexmo-se/transcribe-comprehend-client, you will set TRANSCRIBE_COMPREHEND_REFERENCE_CONNECTION argument as `myappname.herokuapp.com`
+Specifically with the sample application https://github.com/nexmo-community/transcribe-comprehend-client, you will set TRANSCRIBE_COMPREHEND_REFERENCE_CONNECTION argument as `myappname.herokuapp.com`
 
 ## Usage capacity
 
