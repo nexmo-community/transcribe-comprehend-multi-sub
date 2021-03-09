@@ -2,7 +2,7 @@
 	"name": "Vonage API platform connector to Amazon Transcribe and Comprehend services ",
 	"description": "This connector allows a Vonage Voice API call to be transcribed and sentiment scored",
 	"keywords": ["transcribe", "comprehend", "python", "amazon web services", "vonage"],
-	"repository": "https://github.com/nexmo-se/transcribe-comprehend-multi-sub",
+	"repository": "https://github.com/nexmo-community/transcribe-comprehend-multi-sub",
 	"env":{
 		"AWS_ACCESS_KEY_ID": {
 		    "description": "Retrieved from your security credentials on AWS console",
